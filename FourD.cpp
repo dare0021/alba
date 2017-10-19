@@ -1,10 +1,8 @@
-#include <iostream>
-#include <math.h>
+// saved just in case
+// replacing with Armadillo
+
 #include <vector>
 #include <cassert>
-#include <limits>
-#include <sstream>
-#define PRINT(a) std::cout<< a <<"\n"
 
 template <class T> class FourD
 {
@@ -119,16 +117,3 @@ private:
 	int x, y, z, t;
 	int xStride, yStride, zStride;
 };
-
-void test(double *t)
-{
-	*t = 3;
-}
-
-int main()
-{
-	auto fd = FourD<double>(2,2,2,2);
-	fd.put(0,0,1,1, 2.9);
-	fd = fd + 1;
-	PRINT(fd.toString());
-}
