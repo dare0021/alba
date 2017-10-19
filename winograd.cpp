@@ -2,6 +2,7 @@
 #include <vector>
 #include <cassert>
 #include <limits>
+#include <tuple>
 
 /// port of Python slice class
 template <class T> class Slicer
@@ -91,7 +92,7 @@ std::vector<double> quantize(std::vector<double> ary, int bits, double *scale)
 
 //////////////// DIRECT CONVOLUTION ///////////////
 
-auto fconv_slice(int S, int X, int padding, int strides)
+std::tuple<Slicer<double>, Slicer<double>, int> fconv_slice(int S, int X, int padding, int strides)
 {
 	int f1 = 0;
 	int f2 = S - 1;
@@ -108,5 +109,5 @@ auto fconv_slice(int S, int X, int padding, int strides)
 		f2 -= dif;
 		x2 -= dif;
 	}
-	return 
+	return std::make_tuple(Slicer(f1, f2 + 1), Slicer(x1, x2 + 1), f2 - f1 + 1);
 }
