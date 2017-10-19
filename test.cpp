@@ -1,12 +1,13 @@
 #include <iostream>
 #include <math.h>
-#include <list>
+#include <vector>
 #include <cassert>
 #include <limits>
 #include <sstream>
 #define PRINT(a) std::cout<< a <<"\n"
 
-class Slicer
+/// port of Python slice class
+template <class T> class Slicer
 {
 public:
 	Slicer(uint from, uint to)
@@ -15,15 +16,26 @@ public:
 		this->to = to;
 	}
 
-	list<T> slice(list<T> lst)
+	std::vector<T> slice(std::vector<T> lst)
 	{
-		auto retval = {};
+		std::vector<T> retval = {};
 		auto fromIter = lst.begin();
 		auto toIter = lst.begin();
 		std::advance(fromIter, from);
 		std::advance(toIter, to);
-		std::copy(fromIter, toIter, retval.begin());
+		std::copy(fromIter, toIter, std::back_inserter(retval));
 		return retval;
+	}
+
+	std::vector<T> destructiveSlice(std::vector<T> *lst)
+	{
+		auto fromIter = lst->begin();
+		auto toIter = lst->begin();
+		std::advance(fromIter, from);
+		std::advance(toIter, to);
+		lst->erase(lst->begin(), fromIter);
+		lst->erase(toIter, lst->end());
+		return *lst;
 	}
 
 private:
@@ -35,44 +47,12 @@ void test(double *t)
 	*t = 3;
 }
 
-/// returns the exponent
-double strip_mentissa(double val)
-{
-	val = val<0 ? -1 * val : val;
-	int retval;
-	frexp(val, &retval);
-	return retval;
-}
-
-std::list<double> quantize(std::list<double> ary, int bits, double *scale)
-{
-	assert(std::numeric_limits<double>::is_iec559);
-	double maxval = -1 * std::numeric_limits<double>::infinity();
-	for (double v : ary)
-	{
-		double d = v<0 ? -1 * v : v;
-		maxval = d>maxval ? d : maxval;
-	}
-	*scale = strip_mentissa(maxval) / float(1 << (bits - 2));
-	std::list<double> retval = {};
-	for (double v : ary)
-	{
-		retval.push_back(round(v / *scale));
-	}
-	return retval;
-}
-
 int main()
 {
-	std::list<double> iv = {1,-2,3.42};
-	double x = 0;
-	auto lst = quantize(iv, 8, &x);
-	PRINT (x);
-	for (auto i : lst)
-	{
+	std::vector<double> iv = {1,-2,3.42};
+	auto s = Slicer<double>(0,2);
+	s.destructiveSlice(&iv);
+	for (auto i : iv)
 		PRINT(i);
-	}
-	auto s = Slicer(1,-2);
-	PRINT (s.toString());
 }
 

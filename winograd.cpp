@@ -1,32 +1,43 @@
 #include <math.h>
-#include <list>
+#include <vector>
 #include <cassert>
 #include <limits>
 
 /// port of Python slice class
-class Slicer
+template <class T> class Slicer
 {
 public:
 	Slicer(uint from, uint to)
 	{
-		this.from = from;
-		this.to = to;
+		this->from = from;
+		this->to = to;
 	}
 
-	list<T> slice(list<T> lst)
+	std::vector<T> slice(std::vector<T> lst)
 	{
 		auto retval = {};
 		auto fromIter = lst.begin();
 		auto toIter = lst.begin();
 		std::advance(fromIter, from);
 		std::advance(toIter, to);
-		std::copy(fromIter, toIter, retval.begin());
+		std::copy(fromIter, toIter, std::back_inserter(retval));
 		return retval;
+	}
+
+	std::vector<T> destructiveSlice(std::vector<T> *lst)
+	{
+		auto fromIter = lst->begin();
+		auto toIter = lst->begin();
+		std::advance(fromIter, from);
+		std::advance(toIter, to);
+		lst->erase(lst->begin(), fromIter);
+		lst->erase(toIter, lst->end());
+		return *lst;
 	}
 
 private:
 	uint from, to;
-}
+};
 
 int ceil_dev(double x, double y)
 {
@@ -60,7 +71,7 @@ double immediate(double val)
 /// scale: scale used in the aforementioned operation
 /// return type is double for some reason
 /// numpy has long, so it's not a problem with data type size
-std::list<double> quantize(std::list<double> ary, int bits, double *scale)
+std::vector<double> quantize(std::vector<double> ary, int bits, double *scale)
 {
 	assert(std::numeric_limits<double>::is_iec559);
 	double maxval = -1 * std::numeric_limits<double>::infinity();
@@ -70,7 +81,7 @@ std::list<double> quantize(std::list<double> ary, int bits, double *scale)
 		maxval = d>maxval ? d : maxval;
 	}
 	*scale = strip_mentissa(maxval) / float(1 << (bits - 2));
-	std::list<double> retval = {};
+	std::vector<double> retval = {};
 	for (double v : ary)
 	{
 		retval.push_back(round(v / *scale));
