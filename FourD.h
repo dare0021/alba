@@ -23,7 +23,7 @@ public:
 
 	// FourD<T> &operator*(FourD<T> rhs);
 
-	// FourD<T> transpose();
+	void transpose();
 
 	std::vector<T*> getSubset(int from, int to, int stride);
 

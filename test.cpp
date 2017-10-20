@@ -36,6 +36,6 @@ int main()
 		fd.put(1,0,1,4-i, i+1);
 	}
 	PRINT(fd.toString());
-	fd.reverse(2);
+	fd.transpose();
 	PRINT(fd.toString());
 }

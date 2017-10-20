@@ -4,7 +4,7 @@
 template<typename T>
 FourD<T>::FourD(int x, int y, int z, int t)
 {
-	data.resize(x * y* z * t);
+	data.resize(x * y * z * t);
 	zStride = t;
 	yStride = t * z;
 	xStride = t * z * y;
@@ -83,11 +83,43 @@ FourD<T> &FourD<T>::operator-(T rhs)
 // 	??
 // }
 
-// template<typename T>
-// FourD<T> FourD<T>::transpose()
-// {
-// 	??
-// }
+/// puts items from (a,b,c,d) to (d,c,b,a)
+template<typename T>
+void FourD<T>::transpose()
+{
+	std::vector<bool> alreadySwapped = {};
+	alreadySwapped.resize(x * y * z * t);
+	int newX = t;
+	int newY = z;
+	int newZ = y;
+	int newT = x;
+	int newXStride = newT * newZ * newY;
+	int newYStride = newT * newZ;
+	int newZStride = newT;
+	for (int xi=0; xi < x; xi++)
+	{
+		for (int yi=0; yi < y; yi++)
+		{
+			for (int zi=0; zi < z; zi++)
+			{
+				for (int ti=0; ti < t-1; ti++)
+				{
+					if (alreadySwapped[xi * xStride + yi * yStride + zi * zStride + ti])
+					{
+						continue;
+					}
+					std::swap(data[xi * xStride + yi * yStride + zi * zStride + ti],
+							  data[ti * newXStride + zi * newYStride + yi * newZStride + xi]);
+				}
+			}
+		}
+	}
+	std::swap(x, t);
+	std::swap(y, z);
+	zStride = newZStride;
+	yStride = newYStride;
+	xStride = newXStride;
+}
 
 /// returns by reference elements in [from * stride, to * stride)
 template<typename T>
