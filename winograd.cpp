@@ -140,8 +140,7 @@ auto xprop_winograd(FourD<double> I, FourD<double> F, FourD<double> O, FourD<dou
 	int K = std::get<0>(Oshape);
 	int P = std::get<1>(Oshape);
 	int Q = std::get<2>(Oshape);
-	int N2 = std::get<3>(Oshape);
-	assert(N == N2);
+	assert(N == std::get<3>(Oshape));
 
 	int B = 2;
 	int D = B + 2;
@@ -158,7 +157,7 @@ auto xprop_winograd(FourD<double> I, FourD<double> F, FourD<double> O, FourD<dou
 		{
 			auto Fwi = Fw[:, :, c, k];	??
 			auto Fi = F[c, :, :, k];	??
-			trans_F_2x2_3x3(Fwi, Fi, minimal);
+			trans_F_2x2_3x3(Fwi, Fi, minimal);	??
 		}
 	}
 }
