@@ -146,15 +146,23 @@ void FourD<T>::reverse(int axis)
 		{
 			std::reverse(fromIter, toIter);
 		}
+		return;
 	}
-	else
+	int strides[3] = {xStride, yStride, zStride};
+	int stride = strides[axis];
+	int sizes[3] = {x, y, z};
+	int size = sizes[axis];
+	int numReversals = size / 2;
+	int offsetTarget = 1;
+	for (int axisCopy=axis; axisCopy > 0; axisCopy--)
 	{
-		int strides[3] = {xStride, yStride, zStride};
-		int stride = strides[axis];
-		int sizes[4] = {x, y, z, t};
-		int size = sizes[axis];
-		int numReversals = size / 2;
-		for (int i=0, j=size; i<numReversals; i++, j--)
+		offsetTarget *= sizes[axisCopy-1];
+	}
+	offsetTarget = offsetTarget<1 ? 1 : offsetTarget;
+	for (int offset=0; offset < offsetTarget; offset++)
+	{
+		int offsetAmt = offset * size;
+		for (int i=offsetAmt, j=size+offsetAmt; i<numReversals+offsetAmt; i++, j--)
 		{
 			massSwap(getSubset(i, i+1, stride), getSubset(j-1, j, stride));
 		}
@@ -218,7 +226,7 @@ std::string FourD<T>::toString() const
 				{
 					retval += "'" + std::to_string(get(xi, yi, zi, ti)) + "', ";
 				}
-				retval += "'" + std::to_string(get(xi, yi, zi, t-1));
+				retval += "'" + std::to_string(get(xi, yi, zi, t-1)) + "'";
 				retval += "]";
 			}
 			retval += "]\t";
