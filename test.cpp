@@ -25,10 +25,10 @@ void test(double *t)
 int main()
 {
 	std::vector<int> lst = {0,1,2,3,4,5,6};
-	std::vector<int*> a = {&lst[0], &lst[1]};
-	std::vector<int*> b = {&lst[5], &lst[6]};
-	std::swap(*a[0], *b[0]);
-	std::swap(*a[1], *b[1]);
+	auto lstp = &lst;
+	auto lst2 = std::vector<int>(*lstp);
+	lst2.push_back(7);
+	lst2[6] = 8;
 	for (auto i : lst)
 	{
 		PRINT(i);

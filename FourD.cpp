@@ -16,6 +16,23 @@ public:
 		this->t = t;
 	}
 
+	FourD(FourD fd)
+	{
+		auto size = fd.size();
+		int x = std::get<0>(size);
+		int y = std::get<1>(size);
+		int z = std::get<2>(size);
+		int t = std::get<3>(size);
+		data = std::vector<T>(*fd.exposeInnards());
+		zStride = t;
+		yStride = t * z;
+		xStride = t * z * y;
+		this->x = x;
+		this->y = y;
+		this->z = z;
+		this->t = t;	
+	}
+
 	T get(int x, int y, int z, int t)
 	{
 		assert(validateIterators(x, y, z, t));
@@ -193,6 +210,16 @@ public:
 		}
 		retval += "]";
 		return retval;
+	}
+
+	&std::vector<T> exposeInnards()
+	{
+		return &data;
+	}
+
+	std::tuple<int, int, int, int> size()
+	{
+		return std::make_tuple(x,y,z,t);
 	}
 
 private:

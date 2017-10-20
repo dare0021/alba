@@ -116,10 +116,17 @@ std::tuple<Slicer<double>, Slicer<double>, int> fconv_slice(int S, int X, int pa
 	return std::make_tuple(Slicer(f1, f2 + 1), Slicer(x1, x2 + 1), f2 - f1 + 1);
 }
 
-auto xprop_winograd(auto I, auto F, auto O, auto padding, bool minimal = false, bool backward = false)
+auto xprop_winograd(FourD<double> I, FourD<double> F, FourD<double> O, FourD<double> padding, bool minimal = false, bool backward = false)
 {
 	if (backward)
 	{
-		F = 
+		F = new FourD<double>(F);
+		F.reverse(1);
+		F.reverse(2);
+		auto data = padding.exposeInnards();
+		for (int i=0; i<data.size())
+		{
+			data[i] = 2 - data[i];
+		}
 	}
 }
