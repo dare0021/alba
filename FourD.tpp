@@ -89,7 +89,7 @@ FourD<T> &FourD<T>::operator-(T rhs)
 // 	??
 // }
 
-// returns by reference elements in [from * stride, to * stride)
+/// returns by reference elements in [from * stride, to * stride)
 template<typename T>
 std::vector<T*> FourD<T>::getSubset(int from, int to, int stride)
 {		
@@ -131,7 +131,7 @@ std::vector<T*> FourD<T>::getZ(int from, int to)
 	return getSubset(from, to, zStride);
 }
 
-/// 0is x axis, etc
+/// 0 is x axis, etc
 template<typename T>
 void FourD<T>::reverse(int axis)
 {
@@ -221,9 +221,9 @@ std::string FourD<T>::toString() const
 				retval += "'" + std::to_string(get(xi, yi, zi, t-1));
 				retval += "]";
 			}
-			retval += "]";
+			retval += "]\t";
 		}
-		retval += "]";
+		retval += "]\n";
 	}
 	retval += "]";
 	return retval;

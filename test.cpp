@@ -29,5 +29,6 @@ void test(double *t)
 int main()
 {
 	auto fd = FourD<int>(2,3,4,5);
+	fd.put(1,1,1,0, 24);
 	PRINT(fd.toString());
 }

@@ -53,4 +53,5 @@ private:
 	int xStride, yStride, zStride;
 };
 
+// template classes are weird
 #include "FourD.tpp"
