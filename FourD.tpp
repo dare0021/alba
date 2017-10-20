@@ -17,7 +17,7 @@ FourD<T>::FourD(int x, int y, int z, int t)
 template<typename T>
 FourD<T>::FourD(const FourD<T> &fd)
 {
-	auto size = fd.size();
+	auto size = fd.shape();
 	int x = std::get<0>(size);
 	int y = std::get<1>(size);
 	int z = std::get<2>(size);
@@ -79,7 +79,7 @@ FourD<T> &FourD<T>::operator-(T rhs)
 // template<typename T>
 // FourD<T> &FourD<T>::operator*(FourD<T> rhs)
 // {
-// 	assert(validateMatmul(this->size(), rhs.size()));
+// 	assert(validateMatmul(this->shape(), rhs.shape()));
 // 	??
 // }
 
@@ -276,7 +276,7 @@ const std::vector<T>* FourD<T>::exposeInnards() const
 }
 
 template<typename T>
-std::tuple<int, int, int, int> FourD<T>::size() const
+std::tuple<int, int, int, int> FourD<T>::shape() const
 {
 	return std::make_tuple(x,y,z,t);
 }

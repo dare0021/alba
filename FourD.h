@@ -45,7 +45,7 @@ public:
 
 	const std::vector<T>* exposeInnards() const;
 
-	std::tuple<int, int, int, int> size() const;
+	std::tuple<int, int, int, int> shape() const;
 
 private:
 	std::vector<T> data = {};
