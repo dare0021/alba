@@ -147,4 +147,18 @@ auto xprop_winograd(FourD<double> I, FourD<double> F, FourD<double> O, FourD<dou
 	int D = B + 2;
 	int Yw = ceil_dev(P, B);
 	int Xw = ceil_dev(Q, B);
+
+	auto Fw = FourD<double>(D, D, C, K);
+	auto Iw = SixD<double>(D, D, C, Yw, Xw, N);	??
+	auto Mw = SixD<double>(D, D, K, Yw, Xw, N);	??
+
+	for (int c=0; c < C; c++)
+	{
+		for (int k=0; k < K; k++)
+		{
+			auto Fwi = Fw[:, :, c, k];	??
+			auto Fi = F[c, :, :, k];	??
+			trans_F_2x2_3x3(Fwi, Fi, minimal);
+		}
+	}
 }
