@@ -1,6 +1,3 @@
-// saved just in case
-// replacing with Armadillo
-
 #include <vector>
 #include <cassert>
 
@@ -57,9 +54,95 @@ public:
 		return *this;
 	}
 
-	FourD transpose()
+	FourD<T> &operator*(FourD<T> rhs)
 	{
+		assert(validateMatmul(this->size(), rhs.size()));
+		??
+	}
 
+	FourD<T> transpose()
+	{
+		??
+	}
+
+	// returns by reference elements in [from * stride, to * stride)
+	std::vector<T*> getSubset(int from, int to, int stride)
+	{		
+		std::vector<T*> retval = {};
+		from *= stride;
+		to *= stride;
+		for (int i=from; i < to; i++)
+		{
+			retval.push_back(&(data[i]));
+		}
+		return retval;
+	}
+
+	void massSwap(std::vector<T*> a, std::vector<T*> b)
+	{
+		assert(a.size() == b.size());
+		for (int i=0; i<a.size(); i++)
+		{
+			std::swap(*a[i], *b[i]);
+		}
+	}
+
+	std::vector<T*> getX(int from, int to)
+	{
+		return getSubset(from, to, xStride);
+	}
+
+	std::vector<T*> getY(int from, int to)
+	{
+		return getSubset(from, to, yStride);
+	}
+
+	std::vector<T*> getZ(int from, int to)
+	{
+		return getSubset(from, to, zStride);
+	}
+
+	/// 0 is x axis, etc
+	void reverse(int axis)
+	{
+		assert(0 <= axis && axis < 4);
+		if (axis == 3)
+		{
+			auto fromIter = data.begin();
+			auto toIter = data.begin();
+			for (std::advance(toIter, zStride);
+				 std::distance(toIter, data.end()) >= 0;
+				 std::advance(fromIter, zStride), std::advance(toIter, zStride))
+			{
+				std::reverse(fromIter, toIter);
+			}
+		}
+		else
+		{
+			int strides[3] = {xStride, yStride, zStride};
+			int stride = selectionBuffer[axis];
+			int sizes[4] = {x, y, z, t};
+			int size = sizes[axis];
+			int numReversals = size / 2;
+			for (int i=0, j=size; i<numReversals; i++, j--)
+			{
+				massSwap(getSubset(i, i+1, stride), getSubset(j-1, j, stride));
+			}
+		}
+	}
+
+	bool validateMatmul(std::tuple<int, int, int, int> asize, std::tuple<int, int, int, int>  bsize)
+	{
+		a0 = std::get<0>(asize);
+		a1 = std::get<1>(asize);
+		a2 = std::get<2>(asize);
+		a3 = std::get<3>(asize);
+		b0 = std::get<0>(bsize);
+		b1 = std::get<1>(bsize);
+		b2 = std::get<2>(bsize);
+		b3 = std::get<3>(bsize);
+
+		return ??
 	}
 
 	bool validateIterators(int x, int y, int z, int t)

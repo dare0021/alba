@@ -6,6 +6,8 @@
 #include <limits>
 #include <tuple>
 
+#include "FourD.h"
+
 /// port of Python slice class
 template <class T> class Slicer
 {
@@ -114,3 +116,10 @@ std::tuple<Slicer<double>, Slicer<double>, int> fconv_slice(int S, int X, int pa
 	return std::make_tuple(Slicer(f1, f2 + 1), Slicer(x1, x2 + 1), f2 - f1 + 1);
 }
 
+auto xprop_winograd(auto I, auto F, auto O, auto padding, bool minimal = false, bool backward = false)
+{
+	if (backward)
+	{
+		F = 
+	}
+}

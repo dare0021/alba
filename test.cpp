@@ -6,118 +6,15 @@
 #include <sstream>
 #define PRINT(a) std::cout<< a <<"\n"
 
-template <class T> class FourD
+template <class T> class Tc
 {
 public:
-	FourD(int x, int y, int z, int t)
+	T dat;
+
+	T* getLink()
 	{
-		data.resize(x * y* z * t);
-		zStride = t;
-		yStride = t * z;
-		xStride = t * z * y;
-		this->x = x;
-		this->y = y;
-		this->z = z;
-		this->t = t;
+		return &dat;
 	}
-
-	T get(int x, int y, int z, int t)
-	{
-		assert(validateIterators(x, y, z, t));
-		return data[x * xStride + y * yStride + z * zStride + t];
-	}
-
-	void put(int x, int y, int z, int t, T val)
-	{
-		assert(validateIterators(x, y, z, t));
-		data[x * xStride + y * yStride + z * zStride + t] = val;
-	}
-
-	FourD<T> &operator+=(T rhs)
-	{
-		for (int i=0; i<data.size(); i++)
-			data[i] += rhs;
-		return *this;
-	}
-
-	FourD<T> &operator+(T rhs)
-	{
-		*this += rhs;
-		return *this;
-	}
-
-	FourD<T> &operator-=(T rhs)
-	{
-		for (int i=0; i<data.size(); i++)
-			data[i] -= rhs;
-		return *this;
-	}
-
-	FourD<T> &operator-(T rhs)
-	{
-		*this -= rhs;
-		return *this;
-	}
-
-	FourD transpose()
-	{
-
-	}
-
-	bool validateIterators(int x, int y, int z, int t)
-	{
-		if(x < 0)
-			return false;
-		if(y < 0)
-			return false;
-		if(z < 0)
-			return false;
-		if(t < 0)
-			return false;
-		if(x >= this->x)
-			return false;
-		if(y >= this->y)
-			return false;
-		if(z >= this->z)
-			return false;
-		if(t >= this->t)
-			return false;
-		return true;
-	}
-
-	// on one hand, this is a clusterfuck
-	// on the other hand, why not?
-	std::string toString()
-	{
-		std::string retval = "[";
-		for (int xi=0; xi < x; xi++)
-		{
-			retval += "[";
-			for (int yi=0; yi < y; yi++)
-			{
-				retval += "[";
-				for (int zi=0; zi < z; zi++)
-				{
-					retval += "[";
-					for (int ti=0; ti < t-1; ti++)
-					{
-						retval += "'" + std::to_string(get(xi, yi, zi, ti)) + "', ";
-					}
-					retval += "'" + std::to_string(get(xi, yi, zi, t-1));
-					retval += "]";
-				}
-				retval += "]";
-			}
-			retval += "]";
-		}
-		retval += "]";
-		return retval;
-	}
-
-private:
-	std::vector<T> data = {};
-	int x, y, z, t;
-	int xStride, yStride, zStride;
 };
 
 void test(double *t)
@@ -127,8 +24,13 @@ void test(double *t)
 
 int main()
 {
-	auto fd = FourD<double>(2,2,2,2);
-	fd.put(0,0,1,1, 2.9);
-	fd = fd + 1;
-	PRINT(fd.toString());
+	std::vector<int> lst = {0,1,2,3,4,5,6};
+	std::vector<int*> a = {&lst[0], &lst[1]};
+	std::vector<int*> b = {&lst[5], &lst[6]};
+	std::swap(*a[0], *b[0]);
+	std::swap(*a[1], *b[1]);
+	for (auto i : lst)
+	{
+		PRINT(i);
+	}
 }
