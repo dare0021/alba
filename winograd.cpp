@@ -120,13 +120,31 @@ auto xprop_winograd(FourD<double> I, FourD<double> F, FourD<double> O, FourD<dou
 {
 	if (backward)
 	{
-		F = new FourD<double>(F);
+		F = FourD<double>(F);
 		F.reverse(1);
 		F.reverse(2);
+		F.transpose();
 		auto data = padding.exposeInnards();
-		for (int i=0; i<data.size())
+		for (int i=0; i<data->size(); i++)
 		{
-			data[i] = 2 - data[i];
+			(*data)[i] = 2 - (*data)[i];
 		}
 	}
+
+	auto Ishape = I.size();
+	auto Oshape = O.size();
+	int C = std::get<0>(Ishape);
+	int Y = std::get<1>(Ishape);
+	int X = std::get<2>(Ishape);
+	int N = std::get<3>(Ishape);
+	int K = std::get<0>(Oshape);
+	int P = std::get<1>(Oshape);
+	int Q = std::get<2>(Oshape);
+	int N2 = std::get<3>(Oshape);
+	assert(N == N2);
+
+	int B = 2;
+	int D = B + 2;
+	int Yw = ceil_dev(P, B);
+	int Xw = ceil_dev(Q, B);
 }

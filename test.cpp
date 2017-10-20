@@ -4,7 +4,11 @@
 #include <cassert>
 #include <limits>
 #include <sstream>
+
+#include "FourD.h"
+
 #define PRINT(a) std::cout<< a <<"\n"
+
 
 template <class T> class Tc
 {
@@ -26,9 +30,7 @@ int main()
 {
 	std::vector<int> lst = {0,1,2,3,4,5,6};
 	auto lstp = &lst;
-	auto lst2 = std::vector<int>(*lstp);
-	lst2.push_back(7);
-	lst2[6] = 8;
+	(*lstp)[1] = 4;
 	for (auto i : lst)
 	{
 		PRINT(i);

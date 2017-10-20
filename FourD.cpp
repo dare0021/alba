@@ -1,4 +1,3 @@
-#include <vector>
 #include <cassert>
 
 template <class T> class FourD
@@ -16,14 +15,14 @@ public:
 		this->t = t;
 	}
 
-	FourD(FourD fd)
+	FourD(const FourD<T> &fd)
 	{
-		auto size = fd.size();
+		auto size = fd->size();
 		int x = std::get<0>(size);
 		int y = std::get<1>(size);
 		int z = std::get<2>(size);
 		int t = std::get<3>(size);
-		data = std::vector<T>(*fd.exposeInnards());
+		data = std::vector<T>(*fd->exposeInnards());
 		zStride = t;
 		yStride = t * z;
 		xStride = t * z * y;
@@ -71,16 +70,16 @@ public:
 		return *this;
 	}
 
-	FourD<T> &operator*(FourD<T> rhs)
-	{
-		assert(validateMatmul(this->size(), rhs.size()));
-		??
-	}
+	// FourD<T> &operator*(FourD<T> rhs)
+	// {
+	// 	assert(validateMatmul(this->size(), rhs.size()));
+	// 	??
+	// }
 
-	FourD<T> transpose()
-	{
-		??
-	}
+	// FourD<T> transpose()
+	// {
+	// 	??
+	// }
 
 	// returns by reference elements in [from * stride, to * stride)
 	std::vector<T*> getSubset(int from, int to, int stride)
@@ -159,7 +158,8 @@ public:
 		b2 = std::get<2>(bsize);
 		b3 = std::get<3>(bsize);
 
-		return ??
+		return true;
+		// return ??
 	}
 
 	bool validateIterators(int x, int y, int z, int t)
@@ -212,7 +212,7 @@ public:
 		return retval;
 	}
 
-	&std::vector<T> exposeInnards()
+	std::vector<T>* exposeInnards()
 	{
 		return &data;
 	}
@@ -221,9 +221,4 @@ public:
 	{
 		return std::make_tuple(x,y,z,t);
 	}
-
-private:
-	std::vector<T> data = {};
-	int x, y, z, t;
-	int xStride, yStride, zStride;
 };
