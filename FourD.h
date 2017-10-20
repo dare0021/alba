@@ -5,11 +5,11 @@
 template <class T> class FourD
 {
 public:
-	FourD(int x, int y, int z, int t);
+	FourD<T>(int x, int y, int z, int t);
 
-	FourD(const FourD<T> &fd);
+	FourD<T>(const FourD<T> &fd);
 
-	T get(int x, int y, int z, int t);
+	T get(int x, int y, int z, int t) const;
 
 	void put(int x, int y, int z, int t, T val);
 
@@ -37,18 +37,20 @@ public:
 
 	void reverse(int axis);
 
-	bool validateMatmul(std::tuple<int, int, int, int> asize, std::tuple<int, int, int, int>  bsize);
+	bool validateMatmul(std::tuple<int, int, int, int> asize, std::tuple<int, int, int, int>  bsize) const;
 
-	bool validateIterators(int x, int y, int z, int t);
+	bool validateIterators(int x, int y, int z, int t) const;
 
-	std::string toString();
+	std::string toString() const;
 
-	std::vector<T>* exposeInnards();
+	const std::vector<T>* exposeInnards() const;
 
-	std::tuple<int, int, int, int> size();
+	std::tuple<int, int, int, int> size() const;
 
 private:
 	std::vector<T> data = {};
 	int x, y, z, t;
 	int xStride, yStride, zStride;
 };
+
+#include "FourD.tpp"

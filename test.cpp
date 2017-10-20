@@ -28,11 +28,6 @@ void test(double *t)
 
 int main()
 {
-	std::vector<int> lst = {0,1,2,3,4,5,6};
-	auto lstp = &lst;
-	(*lstp)[1] = 4;
-	for (auto i : lst)
-	{
-		PRINT(i);
-	}
+	auto fd = FourD<int>(2,3,4,5);
+	PRINT(fd.toString());
 }
