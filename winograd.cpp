@@ -131,16 +131,16 @@ auto xprop_winograd(FourD<double> I, FourD<double> F, FourD<double> O, FourD<dou
 		}
 	}
 
-	auto Ishape = I.size();
-	auto Oshape = O.size();
-	int C = std::get<0>(Ishape);
-	int Y = std::get<1>(Ishape);
-	int X = std::get<2>(Ishape);
-	int N = std::get<3>(Ishape);
-	int K = std::get<0>(Oshape);
-	int P = std::get<1>(Oshape);
-	int Q = std::get<2>(Oshape);
-	assert(N == std::get<3>(Oshape));
+	auto Ishape = I.dims();
+	auto Oshape = O.dims();
+	int C = Ishape[0];
+	int Y = Ishape[1];
+	int X = Ishape[2];
+	int N = Ishape[3];
+	int K = Oshape[0];
+	int P = Oshape[1];
+	int Q = Oshape[2];
+	assert(N == Oshape[3]);
 
 	int B = 2;
 	int D = B + 2;
