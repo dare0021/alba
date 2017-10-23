@@ -29,12 +29,6 @@ public:
 
 	void massSwap(std::vector<T*> a, std::vector<T*> b);
 
-	std::vector<T*> getX(int from, int to);
-
-	std::vector<T*> getY(int from, int to);
-
-	std::vector<T*> getZ(int from, int to);
-
 	void reverse(int axis);
 
 	bool validateMatmul(std::tuple<int, int, int, int> asize, std::tuple<int, int, int, int>  bsize) const;
@@ -45,12 +39,14 @@ public:
 
 	const std::vector<T>* exposeInnards() const;
 
-	std::tuple<int, int, int, int> shape() const;
+	std::vector<int> getDims() const;
+
+	std::vector<int> getStrides() const;
 
 private:
 	std::vector<T> data = {};
-	int x, y, z, t;
-	int xStride, yStride, zStride;
+	std::vector<int> dims;
+	std::vector<int> strides;
 };
 
 // template classes are weird

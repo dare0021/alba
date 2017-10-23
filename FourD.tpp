@@ -5,45 +5,37 @@ template<typename T>
 FourD<T>::FourD(int x, int y, int z, int t)
 {
 	data.resize(x * y * z * t);
-	zStride = t;
-	yStride = t * z;
-	xStride = t * z * y;
-	this->x = x;
-	this->y = y;
-	this->z = z;
-	this->t = t;
+	strides = {t*z*y, t*z, t};
+	dims = {x, y, z, t};
+}
+
+FourD<T>::FourD(int x, int y, int z, int t, int u, int v)
+{
+	data.resize(x * y * z * t * u * v);
+	strides = {y*z*t*u*v, z*t*u*v, t*u*v, u*v, v};
+	dims = {x, y, z, t, u, v};
 }
 
 template<typename T>
 FourD<T>::FourD(const FourD<T> &fd)
 {
-	auto size = fd.shape();
-	int x = std::get<0>(size);
-	int y = std::get<1>(size);
-	int z = std::get<2>(size);
-	int t = std::get<3>(size);
+	dims = fd.getDims();
+	strides = fd.getStrides();
 	data = std::vector<T>(*fd.exposeInnards());
-	zStride = t;
-	yStride = t * z;
-	xStride = t * z * y;
-	this->x = x;
-	this->y = y;
-	this->z = z;
-	this->t = t;	
 }
 
 template<typename T>
 T FourD<T>::get(int x, int y, int z, int t) const
 {
 	assert(validateIterators(x, y, z, t));
-	return data[x * xStride + y * yStride + z * zStride + t];
+	return data[x * strides[0] + y * strides[1] + z * strides[2] + t];
 }
 
 template<typename T>
 void FourD<T>::put(int x, int y, int z, int t, T val)
 {
 	assert(validateIterators(x, y, z, t));
-	data[x * xStride + y * yStride + z * zStride + t] = val;
+	data[x * strides[0] + y * strides[1] + z * strides[2] + t] = val;
 }
 
 template<typename T>
@@ -87,15 +79,17 @@ FourD<T> &FourD<T>::operator-(T rhs)
 template<typename T>
 void FourD<T>::transpose()
 {
+	RETROFIT TO RUN FOR 6D
+
 	std::vector<bool> alreadySwapped = {};
 	alreadySwapped.resize(x * y * z * t);
 	int newX = t;
 	int newY = z;
 	int newZ = y;
 	int newT = x;
-	int newXStride = newT * newZ * newY;
-	int newYStride = newT * newZ;
-	int newZStride = newT;
+	int newstrides[0] = newT * newZ * newY;
+	int newstrides[1] = newT * newZ;
+	int newstrides[2] = newT;
 	for (int xi=0; xi < x; xi++)
 	{
 		for (int yi=0; yi < y; yi++)
@@ -104,21 +98,21 @@ void FourD<T>::transpose()
 			{
 				for (int ti=0; ti < t-1; ti++)
 				{
-					if (alreadySwapped[xi * xStride + yi * yStride + zi * zStride + ti])
+					if (alreadySwapped[xi * strides[0] + yi * strides[1] + zi * strides[2] + ti])
 					{
 						continue;
 					}
-					std::swap(data[xi * xStride + yi * yStride + zi * zStride + ti],
-							  data[ti * newXStride + zi * newYStride + yi * newZStride + xi]);
+					std::swap(data[xi * strides[0] + yi * strides[1] + zi * strides[2] + ti],
+							  data[ti * newstrides[0] + zi * newstrides[1] + yi * newstrides[2] + xi]);
 				}
 			}
 		}
 	}
 	std::swap(x, t);
 	std::swap(y, z);
-	zStride = newZStride;
-	yStride = newYStride;
-	xStride = newXStride;
+	strides[2] = newstrides[2];
+	strides[1] = newstrides[1];
+	strides[0] = newstrides[0];
 }
 
 /// returns by reference elements in [from * stride, to * stride)
@@ -145,42 +139,26 @@ void FourD<T>::massSwap(std::vector<T*> a, std::vector<T*> b)
 	}
 }
 
-template<typename T>
-std::vector<T*> FourD<T>::getX(int from, int to)
-{
-	return getSubset(from, to, xStride);
-}
-
-template<typename T>
-std::vector<T*> FourD<T>::getY(int from, int to)
-{
-	return getSubset(from, to, yStride);
-}
-
-template<typename T>
-std::vector<T*> FourD<T>::getZ(int from, int to)
-{
-	return getSubset(from, to, zStride);
-}
-
 /// 0 is x axis, etc
 template<typename T>
 void FourD<T>::reverse(int axis)
 {
+	RETROFIT TO RUN FOR 6D
+	
 	assert(0 <= axis && axis < 4);
 	if (axis == 3)
 	{
 		auto fromIter = data.begin();
 		auto toIter = data.begin();
-		for (std::advance(toIter, zStride);
+		for (std::advance(toIter, strides[2]);
 			 std::distance(toIter, data.end()) >= 0;
-			 std::advance(fromIter, zStride), std::advance(toIter, zStride))
+			 std::advance(fromIter, strides[2]), std::advance(toIter, strides[2]))
 		{
 			std::reverse(fromIter, toIter);
 		}
 		return;
 	}
-	int strides[3] = {xStride, yStride, zStride};
+	int strides[3] = {strides[0], strides[1], strides[2]};
 	int stride = strides[axis];
 	int sizes[3] = {x, y, z};
 	int size = sizes[axis];
@@ -275,8 +253,16 @@ const std::vector<T>* FourD<T>::exposeInnards() const
 	return &data;
 }
 
+/// return copy to prevent skullduggery
 template<typename T>
-std::tuple<int, int, int, int> FourD<T>::shape() const
+std::vector<int> FourD<T>::getDims() const
 {
-	return std::make_tuple(x,y,z,t);
+	return std::vector<int>(dims);
+}
+
+/// return copy to prevent skullduggery
+template<typename T>
+std::vector<int> FourD<T>::getStrides() const
+{
+	return std::vector<int>(strides);
 }
