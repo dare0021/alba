@@ -9,9 +9,9 @@ public:
 
 	FourD<T>(const FourD<T> &fd);
 
-	T get(int x, int y, int z, int t) const;
+	T get(std::vector<int> loc) const;
 
-	void put(int x, int y, int z, int t, T val);
+	void put(std::vector<int> loc, T val);
 
 	FourD<T> &operator+=(T rhs);
 
@@ -33,7 +33,7 @@ public:
 
 	bool validateMatmul(std::tuple<int, int, int, int> asize, std::tuple<int, int, int, int>  bsize) const;
 
-	bool validateIterators(int x, int y, int z, int t) const;
+	bool validateIterators(std::vector<int> loc) const;
 
 	std::string toString() const;
 
@@ -44,6 +44,10 @@ public:
 	std::vector<int> getStrides() const;
 
 private:
+	std::string quadToString(std::vector<T>::iterator fromIter, std::vector<T>::iterator toIter) const;
+
+	int getPosition(std::vector<T> loc) const;
+
 	std::vector<T> data = {};
 	std::vector<int> dims;
 	std::vector<int> strides;

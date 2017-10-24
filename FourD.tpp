@@ -25,17 +25,17 @@ FourD<T>::FourD(const FourD<T> &fd)
 }
 
 template<typename T>
-T FourD<T>::get(int x, int y, int z, int t) const
+T FourD<T>::get(std::vector<int> loc) const
 {
-	assert(validateIterators(x, y, z, t));
-	return data[x * strides[0] + y * strides[1] + z * strides[2] + t];
+	assert(validateIterators(loc));
+	return data[getPosition(loc)];
 }
 
 template<typename T>
-void FourD<T>::put(int x, int y, int z, int t, T val)
+void FourD<T>::put(std::vector<int> loc, T val)
 {
-	assert(validateIterators(x, y, z, t));
-	data[x * strides[0] + y * strides[1] + z * strides[2] + t] = val;
+	assert(validateIterators(loc));
+	data[getPosition(loc)] = val;
 }
 
 template<typename T>
@@ -144,7 +144,7 @@ template<typename T>
 void FourD<T>::reverse(int axis)
 {
 	RETROFIT TO RUN FOR 6D
-	
+
 	assert(0 <= axis && axis < 4);
 	if (axis == 3)
 	{
@@ -196,32 +196,28 @@ bool FourD<T>::validateMatmul(std::tuple<int, int, int, int> asize, std::tuple<i
 }
 
 template<typename T>
-bool FourD<T>::validateIterators(int x, int y, int z, int t) const
+bool FourD<T>::validateIterators(std::vector<int> loc) const
 {
-	if(x < 0)
-		return false;
-	if(y < 0)
-		return false;
-	if(z < 0)
-		return false;
-	if(t < 0)
-		return false;
-	if(x >= this->x)
-		return false;
-	if(y >= this->y)
-		return false;
-	if(z >= this->z)
-		return false;
-	if(t >= this->t)
-		return false;
+	for (int i=0; i<loc.size(); i++)
+	{
+		if (loc[i] < 0)
+			return false;
+		if (loc[i] >= dims[i])
+			return false;
+	}
 	return true;
 }
 
 // on one hand, this is a clusterfuck
 // on the other hand, why not?
 template<typename T>
-std::string FourD<T>::toString() const
+std::string FourD<T>::quadToString(std::vector<int> locPrefix) const
 {
+	int DMinus4 = dims.size() - 4;
+	int x = dims[DMinus4];
+	int y = dims[DMinus4 + 1];
+	int z = dims[DMinus4 + 2];
+	int t = dims[DMinus4 + 3];
 	std::string retval = "[";
 	for (int xi=0; xi < x; xi++)
 	{
@@ -265,4 +261,15 @@ template<typename T>
 std::vector<int> FourD<T>::getStrides() const
 {
 	return std::vector<int>(strides);
+}
+
+template<typename T>
+int FourD<T>::getPosition(std::vector<int> loc) const
+{
+	assert(validateIterators(loc));
+	int pos = loc[-1];
+	for (int i=0; i<strides.size(); i++)
+	{
+		pos += loc[i] * strides[i];
+	}
 }

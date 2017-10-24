@@ -4,9 +4,10 @@
 #include <cassert>
 #include <limits>
 #include <sstream>
+#include <cblas.h>
 
 #define PRINT(a) std::cout<< a <<"\n"
-#include "FourD.h"
+// #include "FourD.h"
 
 
 
@@ -28,14 +29,24 @@ void test(double *t)
 
 int main()
 {
-	auto fd = FourD<int>(2,3,4,5);
-	fd.put(1,1,1,0, 24);
-	for (int i=0; i<5; i++)
+	double A[6] = {1.0,2.0,1.0,-3.0,4.0,-1.0};         
+	double B[6] = {1.0,2.0,1.0,-3.0,4.0,-1.0};  
+	double C[9] = {.5,.5,.5,.5,.5,.5,.5,.5,.5}; 
+	cblas_dgemm(CblasColMajor, CblasNoTrans, CblasTrans,3,3,2,1,A, 3, B, 3,2,C,3);
+
+	for (int i=0; i<9; i++)
 	{
-		fd.put(0,0,0,i, i+1);
-		fd.put(1,0,1,4-i, i+1);
+		PRINT(C[i]);
 	}
-	PRINT(fd.toString());
-	fd.transpose();
-	PRINT(fd.toString());
+
+	// auto fd = FourD<int>(2,3,4,5);
+	// fd.put(1,1,1,0, 24);
+	// for (int i=0; i<5; i++)
+	// {
+	// 	fd.put(0,0,0,i, i+1);
+	// 	fd.put(1,0,1,4-i, i+1);
+	// }
+	// PRINT(fd.toString());
+	// fd.transpose();
+	// PRINT(fd.toString());
 }
